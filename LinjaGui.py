@@ -157,7 +157,7 @@ while running:
                 row, col = obtener_coordenadas(event.pos)
                 print(f"Coordenadas: [{row},{col}] = {matrix[row][col]}")
 
-                if count == 0 and matrix[row][col] == turn:
+                if count == 0 and controller.ruleOnlyMoveYourPeace(matrix[row][col], turn):
                     m1 = [row, col]
                     count = 1
                 elif count > 0:

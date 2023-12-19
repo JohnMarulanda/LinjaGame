@@ -47,6 +47,13 @@ def ruleNoComeBack(coordFrom, coordTo, turn):
     else:
         print("Regla: Se tiene que mover a otra columna y no se puede devolver")
         return False
+
+def ruleOnlyMoveYourPeace(piece, turn):
+    if piece == turn:
+        return True
+    else:
+        print("Regla: no puedes mover la pieza de tu contrincante")
+        return False
     
 def inputPlayer(coordFrom, coordTo):
     return 0
