@@ -14,6 +14,12 @@ Convenciones del tablero:
 2 = Fichas negras
 """
 
+#Variables
+m1 = [0, 0]
+m2 = [0, 0]
+count = 0
+turn = 1
+subTurn = 1
 
 def cargar_archivo():
     root = Tk()
@@ -133,9 +139,6 @@ pygame.display.set_caption("Linja - Juego de Estrategia")
 
 # Bucle principal para la interfaz gráfica
 running = True
-m1 = [0, 0]
-m2 = [0, 0]
-count = 0
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -154,7 +157,7 @@ while running:
                 row, col = obtener_coordenadas(event.pos)
                 print(f"Coordenadas: [{row},{col}] = {matrix[row][col]}")
 
-                if count == 0 and matrix[row][col] != 0:
+                if count == 0 and matrix[row][col] == turn:
                     m1 = [row, col]
                     count = 1
                 elif count > 0:

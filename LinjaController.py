@@ -52,7 +52,9 @@ def move(matrix, coordFrom, coordTo):
     if overflowCheck(matrix, coordFrom) and overflowCheck(matrix, coordTo) and positionCheck(matrix, coordTo):
         matrix = movePiece(matrix, coordFrom, coordTo)
         return matrix
-    
+
+
+
 """m1 = [0, 0]
 m2 = [0, 0]
 count = 0
