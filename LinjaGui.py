@@ -1,10 +1,10 @@
 import pygame
 import sys
 from tkinter import Tk, filedialog
-
-
+import LinjaController as controller
 # Inicializar Pygame
 pygame.init()
+
 
 """
 Convenciones del tablero:
@@ -132,15 +132,17 @@ pygame.display.set_caption("Linja - Juego de Estrategia")
 
 
 # Bucle principal para la interfaz gráfica
-# Bucle principal para la interfaz gráfica
 running = True
+m1 = [0, 0]
+m2 = [0, 0]
+count = 0
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             if two_button_rect.collidepoint(event.pos):
-                cargar_archivo()
+                #cargar_archivo()
                 # Cambia el estado del botón
                 button_pressed = True
                 # Espera un tiempo antes de restaurar el botón a su estado normal
@@ -151,6 +153,19 @@ while running:
                 # Obtener las coordenadas al hacer clic en una celda
                 row, col = obtener_coordenadas(event.pos)
                 print(f"Coordenadas: [{row},{col}] = {matrix[row][col]}")
+
+                if count == 0:
+                    m1 = [row, col]
+                    count = 1
+                else:
+                    m2 = [row, col]
+                    count = 0
+                    result = controller.move(matrix, m1, m2)
+                    if result:
+                        matrix = result
+                    else:
+                        print("posicion erronea")
+
         if event.type == pygame.USEREVENT:
             # Restaura el botón a su estado normal
             button_pressed = False
