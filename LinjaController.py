@@ -2,7 +2,7 @@ import numpy as np
 
 #----------------- Movements ------------------------
 
-#check if values are btw values
+#evalua si la posicion no se sale de la matriz
 def overflowCheck(matrix, array):
     maxX = len(matrix[0])
     minX = 0
@@ -13,7 +13,7 @@ def overflowCheck(matrix, array):
     else:
         return False
 
-#check if postion is 0
+#evalua si la posicion de destino esta libre
 def positionCheck(matrix, coordTo):
     if  matrix[coordTo[0]][coordTo[1]] == 0:
         return True
@@ -21,7 +21,7 @@ def positionCheck(matrix, coordTo):
         print("Regla: La posicion final debe estar vacia")
         return False
 
-#move one peace to another position
+#mueve la pieza de posicion
 def movePiece(matrix, coordFrom, coordTo):
     matrix[coordTo[0]][coordTo[1]] = matrix[coordFrom[0]][coordFrom[1]]
     matrix[coordFrom[0]][coordFrom[1]] = 0
@@ -30,17 +30,15 @@ def movePiece(matrix, coordFrom, coordTo):
 
 #----------------- GameRules ------------------------
 
-turn = 1 #1 = rojas, 2 = negras
-countTurns = 0 #count turns inside a turn, max 2 turns per player
 
-
-#Check if movement is posible
+#evalua si la jugada esta dentro de los movimientos posibles en este turno
 def ruleMaxMovements(coordFrom, coordTo, maxMovements):
     if (abs(coordFrom[1] - coordTo[1]) + abs(coordFrom[0] - coordTo[0])) <= maxMovements:
         return True
     else:
         return False
 
+#evalua si el jugador se mueve a otra columna y no se devuelva
 def ruleNoComeBack(coordFrom, coordTo, turn):
     if turn == 1 and coordFrom[1] < coordTo[1]:
         return True
@@ -48,6 +46,7 @@ def ruleNoComeBack(coordFrom, coordTo, turn):
         print("Regla: Se tiene que mover a otra columna y no se puede devolver")
         return False
 
+#evalua si el jugador del turno actual mueve su pieza y no la del contrincante
 def ruleOnlyMoveYourPeace(piece, turn):
     if piece == turn:
         return True
@@ -63,6 +62,7 @@ def inputOpponent():
 
 #----------------- Gameplay ------------------------
 
+#funcion para mover una pieza
 def move(matrix, coordFrom, coordTo, turn):
     if overflowCheck(matrix, coordFrom) and overflowCheck(matrix, coordTo) and positionCheck(matrix, coordTo) and ruleNoComeBack(coordFrom, coordTo, turn):
         matrix = movePiece(matrix, coordFrom, coordTo)
@@ -72,17 +72,4 @@ def move(matrix, coordFrom, coordTo, turn):
 
 
 
-"""m1 = [0, 0]
-m2 = [0, 0]
-count = 0
-def setCoords(matrix, coord):
-    if count == 0:
-        m1 = coord
-        count = 1
-    else:
-        m2 = coord
-        count = 0
-        matrix = move(matrix, m1, m2)
-    
-    return matrix"""
     
