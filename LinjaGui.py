@@ -1,7 +1,21 @@
+"""
+
+Proyecto final - Introducción a la IA
+
+John Jader Marulanda Valero - 2060034
+Joann Esteban Bedoya Lopez - 2059906
+Carlos Eduardo Guerrero Jaramillo - 2060216
+
+Universidad del Valle Sede Tuluá
+Ingeniería de Sistemas - 3743
+
+"""
+
 import pygame
 import sys
 from tkinter import Tk, filedialog
 import LinjaController as controller
+
 # Inicializar Pygame
 pygame.init()
 
@@ -14,12 +28,13 @@ Convenciones del tablero:
 2 = Fichas negras
 """
 
-#Variables
+# Variables
 m1 = [0, 0]
 m2 = [0, 0]
 count = 0
 turn = 1
 subTurn = 1
+
 
 def cargar_archivo():
     root = Tk()
@@ -33,12 +48,33 @@ def cargar_archivo():
     if not file_path:
         return None
 
-    matrix = []
     try:
         with open(file_path, "r") as file:
-            for line in file:
+            # Leer líneas del archivo y contar unos, doses y ceros
+            ones_count = 0
+            twos_count = 0
+            zeros_count = 0
+            lines = file.readlines()
+
+            for line in lines:
                 row = [int(cell) for cell in line.split()]
-                matrix.append(row)
+                zeros_count += row.count(0)
+                ones_count += row.count(1)
+                twos_count += row.count(2)
+
+            # Verificar que las dimensiones y la cantidad de unos y doses sean correctas
+            if (
+                len(lines) == 6
+                and len(lines[0].split()) == 8
+                and ones_count == 12
+                and twos_count == 12
+                and zeros_count == (6 * 8 - 24)
+            ):
+                matrix = [[int(cell) for cell in line.split()] for line in lines]
+            else:
+                print("Archivo no cumple con las condiciones especificas de LINJA.")
+                return None
+
     except Exception as e:
         print(f"Error al cargar el archivo: {e}")
         return None
@@ -55,6 +91,10 @@ def obtener_coordenadas(pos):
 
 # Generación de la matriz
 matrix = cargar_archivo()
+
+# Verificar si la carga del archivo fue exitosa
+if matrix is None:
+    sys.exit()  # Salir del programa si la carga falla
 
 # Tamaño de la ventana
 matrix_rows = len(matrix)
@@ -81,7 +121,7 @@ blank_surface.fill((45, 87, 44))  # Rellena el área en blanco con blanco
 
 # Coordenadas y tamaño del nuevo botón (debajo del botón existente)
 two_button_rect = pygame.Rect(
-    600, 200, 160, 80
+    600, 200, 160, 70
 )  #  Puedes ajustar las coordenadas y el tamaño según tus necesidades
 
 
@@ -94,8 +134,8 @@ button_unpressed_image = pygame.image.load("Sprites/Play_Unpressed.png")
 button_pressed_image = pygame.image.load("Sprites/Play_Pressed.png")
 
 # Escalar las imágenes al tamaño deseado (ancho, alto)
-button_unpressed_image = pygame.transform.scale(button_unpressed_image, (160, 80))
-button_pressed_image = pygame.transform.scale(button_pressed_image, (160, 80))
+button_unpressed_image = pygame.transform.scale(button_unpressed_image, (160, 70))
+button_pressed_image = pygame.transform.scale(button_pressed_image, (160, 70))
 
 # Coordenadas donde dibujar la imagen del botón
 button_rect = button_unpressed_image.get_rect()
@@ -145,7 +185,7 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             if two_button_rect.collidepoint(event.pos):
-                #cargar_archivo()
+                cargar_archivo()
                 # Cambia el estado del botón
                 button_pressed = True
                 # Espera un tiempo antes de restaurar el botón a su estado normal
@@ -157,7 +197,9 @@ while running:
                 row, col = obtener_coordenadas(event.pos)
                 print(f"Coordenadas: [{row},{col}] = {matrix[row][col]}")
 
-                if count == 0 and controller.ruleOnlyMoveYourPeace(matrix[row][col], turn):
+                if count == 0 and controller.ruleOnlyMoveYourPeace(
+                    matrix[row][col], turn
+                ):
                     m1 = [row, col]
                     count = 1
                 elif count > 0:
@@ -172,6 +214,14 @@ while running:
         if event.type == pygame.USEREVENT:
             # Restaura el botón a su estado normal
             button_pressed = False
+
+        # Aqui se pondria la funcion y muestra para mirar quien gana.
+        # text = font.render(f"Ganador: {funcion_QuienGana()}", True, (0, 0, 0))
+        # blank_surface.blit(text, (30, 300))
+
+        # Aqui se pondria la funcion y muestra para mirar el puntaje.
+        # text = font.render(f"Puntaje: {funcion_puntaje()}", True, (0, 0, 0))
+        # blank_surface.blit(text, (30, 300))
 
     # Dibuja la superficie degradada en blank_surface con un modo de mezcla
     blank_surface.fill((0, 0, 0))
@@ -200,9 +250,18 @@ while running:
 
     # Renderizar el texto centrado en el rectángulo del texto
     text1 = large_font.render("Linja", True, (0, 0, 0))
+    text2 = font.render("Load a Game", True, (0, 0, 0))
     text3 = font.render("Estrategic game", True, (0, 0, 0))
     blank_surface.blit(text1, text_rect.move(25, 10))
-    blank_surface.blit(text3, text_rect.move(1, 40))
+    blank_surface.blit(text2, text_rect.move(18, 100))
+    blank_surface.blit(text3, text_rect.move(-5, 50))
+
+    # Pruebas de muestra
+    text4 = font.render("Ganador: IA", True, (0, 0, 0))
+    blank_surface.blit(text4, text_rect.move(18, 300))
+
+    text5 = font.render("Puntaje: 33", True, (0, 0, 0))
+    blank_surface.blit(text5, text_rect.move(18, 320))
 
     screen.blit(blank_surface, (desired_game_width, 0))  # El área de la derecha.
     pygame.display.flip()
