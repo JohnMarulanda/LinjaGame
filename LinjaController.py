@@ -18,6 +18,7 @@ def positionCheck(matrix, coordTo):
     if  matrix[coordTo[0]][coordTo[1]] == 0:
         return True
     else:
+        print("Regla: La posicion final debe estar vacia")
         return False
 
 #move one peace to another position
@@ -34,10 +35,17 @@ countTurns = 0 #count turns inside a turn, max 2 turns per player
 
 
 #Check if movement is posible
-def checkMaxMovements(coordFrom, coordTo, maxMovements):
+def ruleMaxMovements(coordFrom, coordTo, maxMovements):
     if (abs(coordFrom[1] - coordTo[1]) + abs(coordFrom[0] - coordTo[0])) <= maxMovements:
         return True
     else:
+        return False
+
+def ruleNoComeBack(coordFrom, coordTo, turn):
+    if turn == 1 and coordFrom[1] < coordTo[1]:
+        return True
+    else:
+        print("Regla: Se tiene que mover a otra columna y no se puede devolver")
         return False
     
 def inputPlayer(coordFrom, coordTo):
@@ -48,10 +56,12 @@ def inputOpponent():
 
 #----------------- Gameplay ------------------------
 
-def move(matrix, coordFrom, coordTo):
-    if overflowCheck(matrix, coordFrom) and overflowCheck(matrix, coordTo) and positionCheck(matrix, coordTo):
+def move(matrix, coordFrom, coordTo, turn):
+    if overflowCheck(matrix, coordFrom) and overflowCheck(matrix, coordTo) and positionCheck(matrix, coordTo) and ruleNoComeBack(coordFrom, coordTo, turn):
         matrix = movePiece(matrix, coordFrom, coordTo)
         return matrix
+    else:
+        return False
 
 
 

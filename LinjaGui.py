@@ -163,7 +163,7 @@ while running:
                 elif count > 0:
                     m2 = [row, col]
                     count = 0
-                    result = controller.move(matrix, m1, m2)
+                    result = controller.move(matrix, m1, m2, turn)
                     if result:
                         matrix = result
                     else:
