@@ -154,10 +154,10 @@ while running:
                 row, col = obtener_coordenadas(event.pos)
                 print(f"Coordenadas: [{row},{col}] = {matrix[row][col]}")
 
-                if count == 0:
+                if count == 0 and matrix[row][col] != 0:
                     m1 = [row, col]
                     count = 1
-                else:
+                elif count > 0:
                     m2 = [row, col]
                     count = 0
                     result = controller.move(matrix, m1, m2)
