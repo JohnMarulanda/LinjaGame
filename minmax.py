@@ -2,10 +2,26 @@ import numpy as np
 import copy
 
 
+left_column_accumulated = []  # Lista para la columna izquierda (columna 0)
+right_column_accumulated = []  # Lista para la columna derecha (columna 7)
+
+
 # mueve la pieza de posicion
 def movePiece(matrix, coordFrom, coordTo):
-    matrix[coordTo[0]][coordTo[1]] = matrix[coordFrom[0]][coordFrom[1]]
-    matrix[coordFrom[0]][coordFrom[1]] = 0
+    if matrix[coordTo[0]][coordTo[1]] != 0:
+        # La columna de destino está llena
+        if coordTo[1] == 0:
+            left_column_accumulated.append(matrix[coordFrom[0]][coordFrom[1]])
+        elif coordTo[1] == 7:
+            right_column_accumulated.append(matrix[coordFrom[0]][coordFrom[1]])
+
+        # Eliminar la ficha del tablero
+        matrix[coordFrom[0]][coordFrom[1]] = 0
+    else:
+        # La columna de destino no está llena, realizar el movimiento normal
+        matrix[coordTo[0]][coordTo[1]] = matrix[coordFrom[0]][coordFrom[1]]
+        matrix[coordFrom[0]][coordFrom[1]] = 0
+
     return matrix
 
 
@@ -36,7 +52,6 @@ def getPosibleMatrices(matrix, movements, turn):
     return matrices, coords
 
 
-# calcula los puntajes de cada color
 def calculate_scores(matriz):
     # Inicializar los puntajes
     red_score = 0
@@ -52,11 +67,18 @@ def calculate_scores(matriz):
         count_red = sum(1 for fila in matriz if fila[col_idx] == 1)
         count_black = sum(1 for fila in matriz if fila[col_idx] == 2)
 
+        # Sumar las fichas acumuladas en las columnas izquierda y derecha
+        count_red += left_column_accumulated[: col_idx + 1].count(1)
+        count_black += left_column_accumulated[: col_idx + 1].count(2)
+
+        count_red += right_column_accumulated[col_idx:].count(1)
+        count_black += right_column_accumulated[col_idx:].count(2)
+
         # Actualizar los puntajes según las reglas
         red_score += count_red * scores_per_column[col_idx]
         black_score += count_black * scores_per_column[col_idx]
 
-        # Determinar al ganador
+    # Determinar al ganador
     if red_score > black_score:
         winner = 1
     elif black_score > red_score:
@@ -121,14 +143,14 @@ def minimax(matrix, maximizing, turn, movements):
         return False
 
 
-matrix = [
-    [1, 1, 1, 1, 1, 1, 1, 2],
-    [1, 0, 0, 0, 0, 0, 0, 2],
-    [1, 0, 0, 0, 0, 0, 0, 2],
-    [1, 0, 0, 0, 0, 0, 0, 2],
-    [1, 0, 0, 0, 0, 0, 0, 2],
-    [1, 2, 2, 2, 2, 2, 2, 2],
-]
+# matrix = [
+#     [1, 1, 1, 1, 1, 1, 1, 2],
+#     [1, 0, 0, 0, 0, 0, 0, 2],
+#     [1, 0, 0, 0, 0, 0, 0, 2],
+#     [1, 0, 0, 0, 0, 0, 0, 2],
+#     [1, 0, 0, 0, 0, 0, 0, 2],
+#     [1, 2, 2, 2, 2, 2, 2, 2],
+# ]
 
 # posibles = getPosibleMatrices(matrix, 1, 1)
 # print(getListOfScores(posibles))
