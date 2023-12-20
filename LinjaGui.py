@@ -15,7 +15,8 @@ import pygame
 import sys
 from tkinter import Tk, filedialog
 import LinjaController as controller
-
+import time
+import copy
 # Inicializar Pygame
 pygame.init()
 
@@ -184,7 +185,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN and turn == 1: #turno del jugador
             if two_button_rect.collidepoint(event.pos):
                 cargar_archivo()
                 # Cambia el estado del botón
@@ -206,9 +207,14 @@ while running:
                 elif count > 0:
                     m2 = [row, col]
                     count = 0
-                    result, movements, subTurn, turn = controller.turns(matrix, m1, m2, turn, subTurn, movements)
+                    result, movements, subTurn, turn = controller.turns(copy.deepcopy(matrix), m1, m2, turn, subTurn, movements)
                     if result:
                         matrix = result
+        if turn == 2:
+            time.sleep(0.5)
+            result, movements, subTurn, turn = controller.turns(copy.deepcopy(matrix), None, None, turn, subTurn, movements)
+            if result:
+                matrix = result
 
         if event.type == pygame.USEREVENT:
             # Restaura el botón a su estado normal

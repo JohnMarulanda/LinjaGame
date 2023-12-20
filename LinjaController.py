@@ -12,7 +12,7 @@ Ingeniería de Sistemas - 3743
 """
 
 import numpy as np
-
+import minmax
 # ----------------- Movements ------------------------
 
 
@@ -123,7 +123,7 @@ def move(matrix, coordFrom, coordTo):
 def turns(matrix, coordFrom, coordTo, turn, subTurn, movements):
     # Turno del jugador 1
     if (
-        (turn == 1 or turn == 2)
+        turn == 1
         and overflowCheck(matrix, coordFrom)
         and overflowCheck(matrix, coordTo)
         and positionCheck(matrix, coordTo)
@@ -139,24 +139,43 @@ def turns(matrix, coordFrom, coordTo, turn, subTurn, movements):
         else:
             subTurn = 1  # Resetea subturn
             movements = 1  # movimientos a 1 para el proximo jugador
-
-            if turn == 1:  # Sigueitne jugador
-                turn = 2
-            else:
-                turn = 1
+            turn = 2 # Sigueitne jugador
             print("turno jugador " + str(turn))
         
         #NO hay segundo movimiento
         if movements == 0: 
-            if turn == 1:  # Sigueitne jugador
-                turn = 2
-            else:
-                turn = 1
+            turn = 2 # Sigueitne jugador
             print("turno jugador " + str(turn))
 
         return (move(matrix, coordFrom, coordTo)), movements, subTurn, turn
 
-    else:  # Turno de la ia
+    elif turn == 2:  # Turno de la ia
+        print("IA jugando")
+        ia, coords = minmax.minimax(matrix, True, 2, -movements)
+        #getSecondMovement(matrix, coords[0])
+        #turn = 1
+        #subTurn = 1
+        #movements = 1
+
+
+        if (
+            subTurn == 1
+        ):  # Primera jugada. la tercera jugada es si cae en el movimiento especial
+            movements = getSecondMovement(matrix, coords[1][1])
+            subTurn = 2
+        else:
+            subTurn = 1  # Resetea subturn
+            movements = 1  # movimientos a 1 para el proximo jugador
+            turn = 1 # Sigueitne jugador
+            print("turno jugador " + str(turn))
+        
+        #NO hay segundo movimiento
+        if movements == 0: 
+            turn = 1 # Sigueitne jugador
+            print("turno jugador " + str(turn))
+
+        return ia, movements, subTurn, turn
+    else:
         return False, movements, subTurn, turn
 
 
@@ -184,10 +203,10 @@ def calculate_scores(matriz):
 
         # Determinar al ganador
     if red_score > black_score:
-        winner = "Red"
+        winner = 1
     elif black_score > red_score:
-        winner = "Black"
+        winner = 2
     else:
-        winner = "Tie"
+        winner = 0
 
     return red_score, black_score, winner

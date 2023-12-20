@@ -18,7 +18,6 @@ def get_possible_moves(matrix, turn):
     directions = [
         (1, 0),
         (-1, 0),
-        (0, 1),
         (0, -1),
     ]  # Define las direcciones posibles de movimiento
 
@@ -147,3 +146,14 @@ def minimax(matrix, depth, maximizing_player, turn):
                 min_eval = eval
                 best_move = move
         return min_eval, best_move  # Devuelve el mejor movimiento y su evaluación
+    
+matrix = [
+    [1, 1, 1, 1, 1, 1, 1, 2], 
+    [1, 0, 0, 0, 0, 0, 0, 2],
+    [1, 0, 0, 0, 0, 0, 0, 2],
+    [1, 0, 0, 0, 0, 0, 0, 2],
+    [1, 0, 0, 0, 0, 0, 0, 2],
+    [1, 2, 2, 2, 2, 2, 2, 2]
+]
+
+print(str(minimax(matrix, 3, True, 2)))
