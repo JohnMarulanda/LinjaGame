@@ -43,6 +43,7 @@ def movePiece(matrix, coordFrom, coordTo):
     matrix[coordFrom[0]][coordFrom[1]] = 0
     return matrix
 
+
 # calcula el numero de movimientos segunda jugada, se pasa la matriz una vez hecha el moviento
 def getSecondMovement(matrix, position):
     contador = 0
@@ -50,6 +51,7 @@ def getSecondMovement(matrix, position):
         if fila[position] != 0:
             contador += 1
     return contador
+
 
 def checkSecondTurn(subTurn, movement):
     if subTurn == 2 and movement == 0:
@@ -63,9 +65,7 @@ def checkSecondTurn(subTurn, movement):
 
 # evalua si la jugada esta dentro de los movimientos posibles en este turno
 def ruleMaxMovements(coordFrom, coordTo, maxMovements):
-    if (
-        abs(coordFrom[1] - coordTo[1])
-    ) == maxMovements:
+    if (abs(coordFrom[1] - coordTo[1])) == maxMovements:
         return True
     else:
         print("La pieza debe moverse exactamente: " + str(maxMovements) + " casillas")
@@ -118,39 +118,74 @@ def inputOpponent():
 def move(matrix, coordFrom, coordTo):
     matrix = movePiece(matrix, coordFrom, coordTo)
     return matrix
-    
+
+
 def turns(matrix, coordFrom, coordTo, turn, subTurn, movements):
-
-
-    #Turno del jugador 1
+    # Turno del jugador 1
     if (
         (turn == 1 or turn == 2)
         and overflowCheck(matrix, coordFrom)
         and overflowCheck(matrix, coordTo)
         and positionCheck(matrix, coordTo)
-        and ruleNoComeBack(coordFrom, coordTo, turn) 
+        and ruleNoComeBack(coordFrom, coordTo, turn)
         and ruleMaxMovements(coordFrom, coordTo, movements)
-        ):
-
-        #Se ve en que jugada esta
-        if subTurn == 1 or subTurn == 3: #Primera jugada. la tercera jugada es si cae en el movimiento especial
+    ):
+        # Se ve en que jugada esta
+        if (
+            subTurn == 1 or subTurn == 3
+        ):  # Primera jugada. la tercera jugada es si cae en el movimiento especial
             movements = getSecondMovement(matrix, coordTo[1])
             subTurn += 1
         else:
-            if checkSecondTurn(subTurn, movements): #Movimiento especial, vuelve a jugar, solo si turno subturn es 2
+            if checkSecondTurn(
+                subTurn, movements
+            ):  # Movimiento especial, vuelve a jugar, solo si turno subturn es 2
                 subTurn = 3
-                movements = 1 #El proximo movimiento se repetira a 1
-            elif subTurn == 2 or subTurn == 4: #Se termina el turno del jugador
-                subTurn = 1 #Resetea subturn
-                movements = 1 #movimientos a 1 para el proximo jugador
+                movements = 1  # El proximo movimiento se repetira a 1
+            elif subTurn == 2 or subTurn == 4:  # Se termina el turno del jugador
+                subTurn = 1  # Resetea subturn
+                movements = 1  # movimientos a 1 para el proximo jugador
 
-                if turn == 1: #Sigueitne jugador
+                if turn == 1:  # Sigueitne jugador
                     turn = 2
                 else:
                     turn = 1
-                print("turno jugador "+ str(turn))
+                print("turno jugador " + str(turn))
 
         return (move(matrix, coordFrom, coordTo)), movements, subTurn, turn
-    
-    else: #Turno de la ia
+
+    else:  # Turno de la ia
         return False, movements, subTurn, turn
+
+
+# ----------------- Puntajes ------------------------
+
+
+def calculate_scores(matriz):
+    # Inicializar los puntajes
+    red_score = 0
+    black_score = 0
+    winner = None
+
+    # Definir los puntajes por columna
+    scores_per_column = [5, 3, 2, 1, 1, 2, 3, 5]
+
+    # Recorrer cada columna
+    for col_idx in range(len(matriz[0])):
+        # Contar la cantidad de fichas rojas y negras en la columna
+        count_red = sum(1 for fila in matriz if fila[col_idx] == 1)
+        count_black = sum(1 for fila in matriz if fila[col_idx] == 2)
+
+        # Actualizar los puntajes según las reglas
+        red_score += count_red * scores_per_column[col_idx]
+        black_score += count_black * scores_per_column[col_idx]
+
+        # Determinar al ganador
+    if red_score > black_score:
+        winner = "Red"
+    elif black_score > red_score:
+        winner = "Black"
+    else:
+        winner = "Tie"
+
+    return red_score, black_score, winner

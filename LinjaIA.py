@@ -1,4 +1,4 @@
-'''
+"""
 
 Proyecto final - Introducción a la IA
 
@@ -9,24 +9,37 @@ Carlos Eduardo Guerrero Jaramillo - 2060216
 Universidad del Valle Sede Tuluá
 Ingeniería de Sistemas - 3743
 
-'''
+"""
+
 
 # Encuentra todos los movimientos posibles para un jugador en un estado dado del tablero.
 def get_possible_moves(matrix, turn):
     possible_moves = []
-    directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]  # Define las direcciones posibles de movimiento
+    directions = [
+        (1, 0),
+        (-1, 0),
+        (0, 1),
+        (0, -1),
+    ]  # Define las direcciones posibles de movimiento
 
     for y in range(len(matrix)):
         for x in range(len(matrix[0])):
-            if matrix[y][x] == turn:  # Encuentra las fichas del jugador actual en el tablero
+            if (
+                matrix[y][x] == turn
+            ):  # Encuentra las fichas del jugador actual en el tablero
                 for direction in directions:
                     new_y = y + direction[0]
                     new_x = x + direction[1]
                     if 0 <= new_y < len(matrix) and 0 <= new_x < len(matrix[0]):
-                        if matrix[new_y][new_x] == 0:  # Verifica si la casilla adyacente está vacía
-                            possible_moves.append(((y, x), (new_y, new_x)))  # Agrega el movimiento posible
+                        if (
+                            matrix[new_y][new_x] == 0
+                        ):  # Verifica si la casilla adyacente está vacía
+                            possible_moves.append(
+                                ((y, x), (new_y, new_x))
+                            )  # Agrega el movimiento posible
 
     return possible_moves
+
 
 # Evalúa el tablero y asigna un puntaje para cada jugador en función de la posición de sus fichas.
 def evaluate_board(matrix):
@@ -36,11 +49,18 @@ def evaluate_board(matrix):
     for y in range(len(matrix)):
         for x in range(len(matrix[0])):
             if matrix[y][x] == 1:  # Fichas rojas
-                red_score += (len(matrix[0]) - 1 - x)  # Aumenta el puntaje si están cerca de la columna opuesta
+                red_score += (
+                    len(matrix[0]) - 1 - x
+                )  # Aumenta el puntaje si están cerca de la columna opuesta
             elif matrix[y][x] == 2:  # Fichas negras
-                black_score += x  # Aumenta el puntaje si están cerca de la columna opuesta
+                black_score += (
+                    x  # Aumenta el puntaje si están cerca de la columna opuesta
+                )
 
-    return black_score - red_score  # Puntuación total para las negras menos la puntuación total para las rojas
+    return (
+        black_score - red_score
+    )  # Puntuación total para las negras menos la puntuación total para las rojas
+
 
 # Realiza un movimiento en el tablero si es válido.
 def make_move(matrix, coord_from, coord_to, is_black_turn):
@@ -56,10 +76,12 @@ def make_move(matrix, coord_from, coord_to, is_black_turn):
         print("Movimiento inválido: La posición de destino no está vacía.")
         return None  # Devuelve None si el movimiento no es válido
 
+
 # Cambia el turno del jugador oponente.
 # AÚN ESTÁ EN PRUEBA LA FUNCIONALIDAD, PIPOL
 def opponent_turn(is_black_turn):
     return not is_black_turn  # Cambia el turno negando el booleano
+
 
 # Verifica si el juego ha terminado.
 # Termina el juego si la fincha de algun jugador llega al extremo
@@ -74,9 +96,28 @@ def game_over(matrix):
             red_reached_end = True
 
     if black_reached_end or red_reached_end:
-        return True  # El juego termina si alguna ficha llega al otro extremo del tablero
+        return (
+            True  # El juego termina si alguna ficha llega al otro extremo del tablero
+        )
     else:
         return False
+
+
+# PRUEBA DE GAME OVER, AUN FALTA TERMINAR PARA PODER USAR EN MINIMAX
+
+# def game_over(matriz):
+#     # Verifica si las fichas rojas y negras no comparten ninguna columna
+#     red_columns = set()
+#     black_columns = set()
+
+#     for fila in matriz:
+#         for col, valor in enumerate(fila):
+#             if valor == 1:
+#                 red_columns.add(col)
+#             elif valor == 2:
+#                 black_columns.add(col)
+
+#     return not bool(red_columns.intersection(black_columns))
 
 
 #  Implementa el algoritmo Minimax para encontrar el mejor movimiento en función de un estado dado del tablero.
@@ -85,7 +126,7 @@ def minimax(matrix, depth, maximizing_player, turn):
         return evaluate_board(matrix), None  # Devuelve también None para el movimiento
 
     if maximizing_player:
-        max_eval = float('-inf')
+        max_eval = float("-inf")
         best_move = None
         possible_moves = get_possible_moves(matrix, turn)
         for move in possible_moves:
@@ -96,7 +137,7 @@ def minimax(matrix, depth, maximizing_player, turn):
                 best_move = move
         return max_eval, best_move  # Devuelve el mejor movimiento y su evaluación
     else:
-        min_eval = float('inf')
+        min_eval = float("inf")
         best_move = None
         possible_moves = get_possible_moves(matrix, opponent_turn(turn))
         for move in possible_moves:
