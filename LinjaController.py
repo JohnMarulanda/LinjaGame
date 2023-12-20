@@ -132,25 +132,27 @@ def turns(matrix, coordFrom, coordTo, turn, subTurn, movements):
     ):
         # Se ve en que jugada esta
         if (
-            subTurn == 1 or subTurn == 3
+            subTurn == 1
         ):  # Primera jugada. la tercera jugada es si cae en el movimiento especial
             movements = getSecondMovement(matrix, coordTo[1])
-            subTurn += 1
+            subTurn = 2
         else:
-            if checkSecondTurn(
-                subTurn, movements
-            ):  # Movimiento especial, vuelve a jugar, solo si turno subturn es 2
-                subTurn = 3
-                movements = 1  # El proximo movimiento se repetira a 1
-            elif subTurn == 2 or subTurn == 4:  # Se termina el turno del jugador
-                subTurn = 1  # Resetea subturn
-                movements = 1  # movimientos a 1 para el proximo jugador
+            subTurn = 1  # Resetea subturn
+            movements = 1  # movimientos a 1 para el proximo jugador
 
-                if turn == 1:  # Sigueitne jugador
-                    turn = 2
-                else:
-                    turn = 1
-                print("turno jugador " + str(turn))
+            if turn == 1:  # Sigueitne jugador
+                turn = 2
+            else:
+                turn = 1
+            print("turno jugador " + str(turn))
+        
+        #NO hay segundo movimiento
+        if movements == 0: 
+            if turn == 1:  # Sigueitne jugador
+                turn = 2
+            else:
+                turn = 1
+            print("turno jugador " + str(turn))
 
         return (move(matrix, coordFrom, coordTo)), movements, subTurn, turn
 
