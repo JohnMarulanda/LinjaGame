@@ -207,7 +207,6 @@ while running:
                     m2 = [row, col]
                     count = 0
                     result, movements, subTurn, turn = controller.turns(matrix, m1, m2, turn, subTurn, movements)
-                    print(movements)
                     if result:
                         matrix = result
 
