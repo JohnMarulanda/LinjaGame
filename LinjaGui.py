@@ -34,6 +34,7 @@ m2 = [0, 0]
 count = 0
 turn = 1
 subTurn = 1
+movements = 1 #Numero de movimientos
 
 
 def cargar_archivo():
@@ -195,7 +196,7 @@ while running:
             else:
                 # Obtener las coordenadas al hacer clic en una celda
                 row, col = obtener_coordenadas(event.pos)
-                print(f"Coordenadas: [{row},{col}] = {matrix[row][col]}")
+                #print(f"Coordenadas: [{row},{col}] = {matrix[row][col]}")
 
                 if count == 0 and controller.ruleOnlyMoveYourPeace(
                     matrix[row][col], turn
@@ -205,11 +206,10 @@ while running:
                 elif count > 0:
                     m2 = [row, col]
                     count = 0
-                    result = controller.move(matrix, m1, m2, turn)
+                    result, movements, subTurn, turn = controller.turns(matrix, m1, m2, turn, subTurn, movements)
+                    print(movements)
                     if result:
                         matrix = result
-                    else:
-                        print("posicion erronea")
 
         if event.type == pygame.USEREVENT:
             # Restaura el botón a su estado normal

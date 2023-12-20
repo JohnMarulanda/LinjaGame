@@ -43,6 +43,20 @@ def movePiece(matrix, coordFrom, coordTo):
     matrix[coordFrom[0]][coordFrom[1]] = 0
     return matrix
 
+# calcula el numero de movimientos segunda jugada, se pasa la matriz una vez hecha el moviento
+def getSecondMovement(matrix, position):
+    contador = 0
+    for fila in matrix:
+        if fila[position] != 0:
+            contador += 1
+    return contador
+
+def checkSecondTurn(subTurn, movement):
+    if subTurn == 2 and movement == 0:
+        return True
+    else:
+        return False
+
 
 # ----------------- GameRules ------------------------
 
@@ -50,16 +64,19 @@ def movePiece(matrix, coordFrom, coordTo):
 # evalua si la jugada esta dentro de los movimientos posibles en este turno
 def ruleMaxMovements(coordFrom, coordTo, maxMovements):
     if (
-        abs(coordFrom[1] - coordTo[1]) + abs(coordFrom[0] - coordTo[0])
-    ) <= maxMovements:
+        abs(coordFrom[1] - coordTo[1])
+    ) == maxMovements:
         return True
     else:
+        print("La pieza debe moverse exactamente: " + str(maxMovements) + " casillas")
         return False
 
 
 # evalua si el jugador se mueve a otra columna y no se devuelva
 def ruleNoComeBack(coordFrom, coordTo, turn):
     if turn == 1 and coordFrom[1] < coordTo[1]:
+        return True
+    if turn == 2 and coordFrom[1] > coordTo[1]:
         return True
     else:
         print("Regla: Se tiene que mover a otra columna y no se puede devolver.")
@@ -98,14 +115,42 @@ def inputOpponent():
 
 
 # funcion para mover una pieza
-def move(matrix, coordFrom, coordTo, turn):
+def move(matrix, coordFrom, coordTo):
+    matrix = movePiece(matrix, coordFrom, coordTo)
+    return matrix
+    
+def turns(matrix, coordFrom, coordTo, turn, subTurn, movements):
+
+
+    #Turno del jugador 1
     if (
-        overflowCheck(matrix, coordFrom)
+        (turn == 1 or turn == 2)
+        and overflowCheck(matrix, coordFrom)
         and overflowCheck(matrix, coordTo)
         and positionCheck(matrix, coordTo)
-        and ruleNoComeBack(coordFrom, coordTo, turn)
-    ):
-        matrix = movePiece(matrix, coordFrom, coordTo)
-        return matrix
-    else:
-        return False
+        and ruleNoComeBack(coordFrom, coordTo, turn) 
+        and ruleMaxMovements(coordFrom, coordTo, movements)
+        ):
+
+        #Se ve en que jugada esta
+        if subTurn == 1 or subTurn == 3: #Primera jugada. la tercera jugada es si cae en el movimiento especial
+            movements = getSecondMovement(matrix, coordTo[1])
+            subTurn += 1
+        else:
+            if checkSecondTurn(subTurn, movements): #Movimiento especial, vuelve a jugar, solo si turno subturn es 2
+                subTurn = 3
+                movements = 1 #El proximo movimiento se repetira a 1
+            elif subTurn == 2 or subTurn == 4: #Se termina el turno del jugador
+                subTurn = 1 #Resetea subturn
+                movements = 1 #movimientos a 1 para el proximo jugador
+
+                if turn == 1: #Sigueitne jugador
+                    turn = 2
+                else:
+                    turn = 1
+                print("turno jugador "+ str(turn))
+
+        return (move(matrix, coordFrom, coordTo)), movements, subTurn, turn
+    
+    else: #Turno de la ia
+        return False, movements, subTurn, turn
