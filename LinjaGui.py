@@ -220,14 +220,6 @@ while running:
             # Restaura el botón a su estado normal
             button_pressed = False
 
-        # Aqui se pondria la funcion y muestra para mirar quien gana.
-        # text = font.render(f"Ganador: {funcion_QuienGana()}", True, (0, 0, 0))
-        # blank_surface.blit(text, (30, 300))
-
-        # Aqui se pondria la funcion y muestra para mirar el puntaje.
-        # text = font.render(f"Puntaje: {funcion_puntaje()}", True, (0, 0, 0))
-        # blank_surface.blit(text, (30, 300))
-
     # Dibuja la superficie degradada en blank_surface con un modo de mezcla
     blank_surface.fill((0, 0, 0))
     blank_surface.blit(gradient_surface, (0, 0), special_flags=pygame.BLEND_ADD)
@@ -262,11 +254,24 @@ while running:
     blank_surface.blit(text3, text_rect.move(-5, 50))
 
     # Pruebas de muestra
-    text4 = font.render("Ganador: IA", True, (0, 0, 0))
-    blank_surface.blit(text4, text_rect.move(18, 300))
+    #text4 = font.render("Ganador: IA", True, (0, 0, 0))
+    #blank_surface.blit(text4, text_rect.move(18, 300))
 
-    text5 = font.render("Puntaje: 33", True, (0, 0, 0))
-    blank_surface.blit(text5, text_rect.move(18, 320))
+    # Llamamos a la función de calcular puntajes
+    red_score, black_score, winner = controller.calculate_scores(matrix)
+
+    # Renderizar textos fuera del bucle de eventos
+    text_winner = font.render(f"Winner: {winner}", True, (0, 0, 0))
+    blank_surface.blit(text_winner, (18, 300))
+
+    text_red_score = font.render(f"Red: {red_score}", True, (0, 0, 0))
+    blank_surface.blit(text_red_score, (18, 350))
+
+    text_black_score = font.render(f"Black: {black_score}", True, (0, 0, 0))
+    blank_surface.blit(text_black_score, (18, 400))
+
+    #text5 = font.render("Puntaje: 33", True, (0, 0, 0))
+    #blank_surface.blit(text5, text_rect.move(18, 320))
 
     screen.blit(blank_surface, (desired_game_width, 0))  # El área de la derecha.
     pygame.display.flip()
