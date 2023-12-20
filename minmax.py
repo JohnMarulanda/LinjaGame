@@ -1,6 +1,6 @@
-
 import numpy as np
 import copy
+
 
 # mueve la pieza de posicion
 def movePiece(matrix, coordFrom, coordTo):
@@ -8,28 +8,33 @@ def movePiece(matrix, coordFrom, coordTo):
     matrix[coordFrom[0]][coordFrom[1]] = 0
     return matrix
 
+
 # ve si la columna tiene almenos una posicion en 0 y la retorna la cacilla vacia mas arriba
-def findZeroColumn(matrix, column):
+def findZeroColumn(matrix, column, movements):
+    target_column = min(len(matrix[0]) - 1, max(0, column + movements))
+
     for fila, valor in enumerate(matrix):
-        if valor[column] == 0:
-            return [fila, column]
+        if valor[target_column] == 0:
+            return [fila, target_column]
     return False
+
 
 # recorre toda la matriz y ve que turn son iguales, calcula todos los posibles movimientos
 # retorna list matrices y coords
-def getPosibleMatrices(matrix, movements, turn):# movement es un numero
+def getPosibleMatrices(matrix, movements, turn):
     matrices = []
     coords = []
     aux = None
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
             if matrix[i][j] == turn:
-                aux = findZeroColumn(copy.deepcopy(matrix), j+movements)
+                aux = findZeroColumn(copy.deepcopy(matrix), j, movements)
                 if aux:
                     matrices.append(movePiece(copy.deepcopy(matrix), [i, j], aux))
-                    coords.append([[i, j], aux]) #coordFrom, coordTo
+                    coords.append([[i, j], aux])  # coordFrom, coordTo
 
     return matrices, coords
+
 
 # calcula los puntajes de cada color
 def calculate_scores(matriz):
@@ -61,12 +66,29 @@ def calculate_scores(matriz):
 
     return red_score, black_score, winner
 
+
+def game_over(matriz):
+    # Verifica si las fichas rojas y negras no comparten ninguna columna
+    red_columns = set()
+    black_columns = set()
+
+    for fila in matriz:
+        for col, valor in enumerate(fila):
+            if valor == 1:
+                red_columns.add(col)
+            elif valor == 2:
+                black_columns.add(col)
+
+    return not bool(red_columns.intersection(black_columns))
+
+
 # Obtiene los scores de una matriz puntual
 def getListOfScores(matrices):
     scores = []
     for i in range(len(matrices)):
         scores.append(calculate_scores(matrices[i]))
     return scores
+
 
 # de la tupla de los scores se optine la que tenga puntaje maximo
 # la heuristica es (puntajeRoja < puntajeNegra)
@@ -79,15 +101,18 @@ def find_max_position(tuple_list, turn):
     max_position = 0
 
     for i, tpl in enumerate(tuple_list):
-        if tpl[turn-1] > max_value and (tpl[2] == turn or tpl[2] == 0):
+        if tpl[turn - 1] > max_value and (tpl[2] == turn or tpl[2] == 0):
             max_value = tpl[0]
             max_position = i
 
     return max_position
 
-#La ia siempre tratara de maximizar
+
+# La ia siempre tratara de maximizar
 def minimax(matrix, maximizing, turn, movements):
-    posibles, coords = getPosibleMatrices(matrix, movements, turn) # retorna una lista de matrices
+    posibles, coords = getPosibleMatrices(
+        matrix, movements, turn
+    )  # retorna una lista de matrices
     socresList = getListOfScores(posibles)
     if maximizing:
         position = find_max_position(socresList, turn)
@@ -97,15 +122,15 @@ def minimax(matrix, maximizing, turn, movements):
 
 
 matrix = [
-    [1, 1, 1, 1, 1, 1, 1, 2], 
+    [1, 1, 1, 1, 1, 1, 1, 2],
     [1, 0, 0, 0, 0, 0, 0, 2],
     [1, 0, 0, 0, 0, 0, 0, 2],
     [1, 0, 0, 0, 0, 0, 0, 2],
     [1, 0, 0, 0, 0, 0, 0, 2],
-    [1, 2, 2, 2, 2, 2, 2, 2]
+    [1, 2, 2, 2, 2, 2, 2, 2],
 ]
 
-#posibles = getPosibleMatrices(matrix, 1, 1)
-#print(getListOfScores(posibles))
+# posibles = getPosibleMatrices(matrix, 1, 1)
+# print(getListOfScores(posibles))
 
-#print(np.array(minimax(matrix, True, 2, -1)))
+# print(np.array(minimax(matrix, True, 2, -1)))
