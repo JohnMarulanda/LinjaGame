@@ -8,12 +8,15 @@ def movePiece(matrix, coordFrom, coordTo):
     matrix[coordFrom[0]][coordFrom[1]] = 0
     return matrix
 
+# ve si la columna tiene almenos una posicion en 0 y la retorna la cacilla vacia mas arriba
 def findZeroColumn(matrix, column):
     for fila, valor in enumerate(matrix):
         if valor[column] == 0:
             return [fila, column]
     return False
 
+# recorre toda la matriz y ve que turn son iguales, calcula todos los posibles movimientos
+# retorna list matrices y coords
 def getPosibleMatrices(matrix, movements, turn):# movement es un numero
     matrices = []
     coords = []
@@ -28,6 +31,7 @@ def getPosibleMatrices(matrix, movements, turn):# movement es un numero
 
     return matrices, coords
 
+# calcula los puntajes de cada color
 def calculate_scores(matriz):
     # Inicializar los puntajes
     red_score = 0
@@ -57,13 +61,16 @@ def calculate_scores(matriz):
 
     return red_score, black_score, winner
 
-
+# Obtiene los scores de una matriz puntual
 def getListOfScores(matrices):
     scores = []
     for i in range(len(matrices)):
         scores.append(calculate_scores(matrices[i]))
     return scores
 
+# de la tupla de los scores se optine la que tenga puntaje maximo
+# la heuristica es (puntajeRoja < puntajeNegra)
+# TODO: esto hace lo mismo que la heuristica (puntajeNegra - puntajeRoja), se puede cambiar si es necesario
 def find_max_position(tuple_list, turn):
     if not tuple_list:
         return None  # Return None if the list is empty
