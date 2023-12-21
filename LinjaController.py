@@ -245,6 +245,8 @@ def turns(matrix, coordFrom, coordTo, turn, subTurn, movements, depth=3):
                 print("turno jugador " + str(turn))
 
             if movements == 0:
+                movements = 1
+                subTurn = 1
                 turn = 1
                 print("turno jugador " + str(turn))
 
@@ -263,7 +265,7 @@ def turns(matrix, coordFrom, coordTo, turn, subTurn, movements, depth=3):
 
 def calculate_scores(matriz):
     # Puntajes por columna para fichas rojas y negras
-    red_scores_per_column = [0, 0, 0, 1, 2, 3, 5, 5]
+    red_scores_per_column = [0, 0, 0, 0, 1, 2, 3, 5]
     black_scores_per_column = [5, 3, 2, 1, 0, 0, 0, 0]
 
     # Inicializar los puntajes

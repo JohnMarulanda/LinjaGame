@@ -126,13 +126,20 @@ def game_over(matrix):
             # Si la celda contiene una ficha roja, agregar la columna a red_columns
             if valor == 1:
                 red_columns.add(col)
+                # Verificar si las fichas rojas están en las columnas 5, 6, 7 o 8
+                if col < 4 or col > 7:
+                    return False
             # Si la celda contiene una ficha negra, agregar la columna a black_columns
             elif valor == 2:
                 black_columns.add(col)
+                # Verificar si las fichas negras están en las columnas 1, 2, 3 o 4
+                if col < 0 or col > 3:
+                    return False
 
     # Verificar si no hay columnas compartidas entre fichas rojas y negras
     # Si no hay intersección, significa que cada jugador tiene sus propias columnas y el juego ha terminado
     return not bool(red_columns.intersection(black_columns))
+
 
 
 # Obtiene los scores de una matriz puntual
