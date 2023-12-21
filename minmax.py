@@ -183,6 +183,8 @@ def minimax(matrix, maximizing, depth, turn, movements):
     # Si es el turno de maximizar
     if maximizing:
         maxEval = float("-inf")  # Inicializar la mejor evaluación como menos infinito
+        # Esto se hace para asegurar que cualquier evaluación encontrada durante la búsqueda
+        # sea considerada inicialmente como mejor que la evaluación actual.
         best_move = None  # Inicializar la mejor jugada como None
         # Iterar sobre las posibles matrices y sus coordenadas
         for i, move in enumerate(posibles):
@@ -196,6 +198,8 @@ def minimax(matrix, maximizing, depth, turn, movements):
         return maxEval, best_move
     else:  # Si es el turno de minimizar
         minEval = float("inf")  # Inicializar la mejor evaluación como infinito
+        # Esto se hace para asegurar que cualquier evaluación encontrada durante la búsqueda
+        # sea considerada inicialmente como la peor evaluación posible.
         best_move = None  # Inicializar la mejor jugada como None
         # Iterar sobre las posibles matrices y sus coordenadas
         for i, move in enumerate(posibles):
