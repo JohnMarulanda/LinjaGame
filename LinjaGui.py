@@ -209,9 +209,9 @@ for y in range(gradient_rect.height):
 
 # Cargar imágenes
 image_dict = {
-    0: pygame.image.load("Sprites\Vacio.png"),
-    1: pygame.image.load("Sprites\Ficharoja.png"),
-    2: pygame.image.load("Sprites\FichaNegra.png"),
+    0: pygame.image.load("Sprites/Vacio.png"),
+    1: pygame.image.load("Sprites/Ficharoja.png"),
+    2: pygame.image.load("Sprites/FichaNegra.png"),
 }
 
 # Crear la ventana

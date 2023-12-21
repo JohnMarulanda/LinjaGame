@@ -76,13 +76,14 @@ def getPosibleMatrices(matrix, movements, turn):
 
 
 def calculate_scores(matriz):
+    # Puntajes por columna para fichas rojas y negras
+    red_scores_per_column = [0, 0, 0, 1, 2, 3, 5, 5]
+    black_scores_per_column = [5, 3, 2, 1, 0, 0, 0, 0]
+
     # Inicializar los puntajes
     red_score = 0
     black_score = 0
     winner = None
-
-    # Definir los puntajes por columna
-    scores_per_column = [5, 3, 2, 1, 0, 0, 0, 0]
 
     # Recorrer cada columna
     for col_idx in range(len(matriz[0])):
@@ -97,9 +98,9 @@ def calculate_scores(matriz):
         count_red += right_column_accumulated[col_idx:].count(1)
         count_black += right_column_accumulated[col_idx:].count(2)
 
-        # Actualizar los puntajes según las reglas
-        red_score += count_red * scores_per_column[col_idx]
-        black_score += count_black * scores_per_column[col_idx]
+        # Actualizar los puntajes según las reglas por columna para fichas rojas y negras
+        red_score += count_red * red_scores_per_column[col_idx]
+        black_score += count_black * black_scores_per_column[col_idx]
 
     # Determinar al ganador
     if red_score > black_score:
@@ -111,6 +112,7 @@ def calculate_scores(matriz):
 
     # Devolver los puntajes y al ganador
     return red_score, black_score, winner
+
 
 
 def game_over(matrix):
