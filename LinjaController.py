@@ -13,6 +13,7 @@ Ingeniería de Sistemas - 3743
 
 import numpy as np
 import minmax
+
 # ----------------- Movements ------------------------
 
 
@@ -32,15 +33,34 @@ def overflowCheck(matrix, array):
 def positionCheck(matrix, coordTo):
     if matrix[coordTo[0]][coordTo[1]] == 0:
         return True
+    elif coordTo[1] in [0, 7]:
+        # Permitir que la posición esté ocupada en las columnas extremas
+        return True
     else:
         print("Regla: La posicion final debe estar vacia")
         return False
 
 
+left_column_accumulated = []  # Lista para la columna izquierda (columna 0)
+right_column_accumulated = []  # Lista para la columna derecha (columna 7)
+
+
 # mueve la pieza de posicion
 def movePiece(matrix, coordFrom, coordTo):
-    matrix[coordTo[0]][coordTo[1]] = matrix[coordFrom[0]][coordFrom[1]]
-    matrix[coordFrom[0]][coordFrom[1]] = 0
+    if matrix[coordTo[0]][coordTo[1]] != 0:
+        # La columna de destino está llena
+        if coordTo[1] == 0:
+            left_column_accumulated.append(matrix[coordFrom[0]][coordFrom[1]])
+        elif coordTo[1] == 7:
+            right_column_accumulated.append(matrix[coordFrom[0]][coordFrom[1]])
+
+        # Eliminar la ficha del tablero
+        matrix[coordFrom[0]][coordFrom[1]] = 0
+    else:
+        # La columna de destino no está llena, realizar el movimiento normal
+        matrix[coordTo[0]][coordTo[1]] = matrix[coordFrom[0]][coordFrom[1]]
+        matrix[coordFrom[0]][coordFrom[1]] = 0
+
     return matrix
 
 
@@ -139,12 +159,12 @@ def turns(matrix, coordFrom, coordTo, turn, subTurn, movements):
         else:
             subTurn = 1  # Resetea subturn
             movements = 1  # movimientos a 1 para el proximo jugador
-            turn = 2 # Sigueitne jugador
+            turn = 2  # Sigueitne jugador
             print("turno jugador " + str(turn))
-        
-        #NO hay segundo movimiento
-        if movements == 0: 
-            turn = 2 # Sigueitne jugador
+
+        # NO hay segundo movimiento
+        if movements == 0:
+            turn = 2  # Sigueitne jugador
             print("turno jugador " + str(turn))
 
         return (move(matrix, coordFrom, coordTo)), movements, subTurn, turn
@@ -152,11 +172,10 @@ def turns(matrix, coordFrom, coordTo, turn, subTurn, movements):
     elif turn == 2:  # Turno de la ia
         print("IA jugando")
         ia, coords = minmax.minimax(matrix, True, 2, -movements)
-        #getSecondMovement(matrix, coords[0])
-        #turn = 1
-        #subTurn = 1
-        #movements = 1
-
+        # getSecondMovement(matrix, coords[0])
+        # turn = 1
+        # subTurn = 1
+        # movements = 1
 
         if (
             subTurn == 1
@@ -166,12 +185,12 @@ def turns(matrix, coordFrom, coordTo, turn, subTurn, movements):
         else:
             subTurn = 1  # Resetea subturn
             movements = 1  # movimientos a 1 para el proximo jugador
-            turn = 1 # Sigueitne jugador
+            turn = 1  # Sigueitne jugador
             print("turno jugador " + str(turn))
-        
-        #NO hay segundo movimiento
-        if movements == 0: 
-            turn = 1 # Sigueitne jugador
+
+        # NO hay segundo movimiento
+        if movements == 0:
+            turn = 1  # Sigueitne jugador
             print("turno jugador " + str(turn))
 
         return ia, movements, subTurn, turn
@@ -197,11 +216,18 @@ def calculate_scores(matriz):
         count_red = sum(1 for fila in matriz if fila[col_idx] == 1)
         count_black = sum(1 for fila in matriz if fila[col_idx] == 2)
 
+        # Sumar las fichas acumuladas en las columnas izquierda y derecha
+        count_red += left_column_accumulated[: col_idx + 1].count(1)
+        count_black += left_column_accumulated[: col_idx + 1].count(2)
+
+        count_red += right_column_accumulated[col_idx:].count(1)
+        count_black += right_column_accumulated[col_idx:].count(2)
+
         # Actualizar los puntajes según las reglas
         red_score += count_red * scores_per_column[col_idx]
         black_score += count_black * scores_per_column[col_idx]
 
-        # Determinar al ganador
+    # Determinar al ganador
     if red_score > black_score:
         winner = 1
     elif black_score > red_score:
