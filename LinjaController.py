@@ -222,6 +222,7 @@ def turns(matrix, coordFrom, coordTo, turn, subTurn, movements, depth=3):
             # Si la IA no puede hacer un movimiento, termina el juego
             print("El juego ha terminado.")
             return matrix, movements, subTurn, turn
+    return matrix, movements, subTurn, turn
 
 
 # ----------------- Puntajes ------------------------
