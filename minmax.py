@@ -2,6 +2,19 @@
 import numpy as np
 import copy
 
+
+# funcion game_over cuando ninguna ficha comparte columna
+def game_over(matrix):
+    # Recorrer cada columna del tablero
+    for col_idx in range(len(matrix[0])):
+        column_values = [matrix[row_idx][col_idx] for row_idx in range(len(matrix))]
+        # Si todas las celdas de la columna no son iguales (no hay fichas compartidas)
+        if len(set(column_values)) == len(column_values):
+            return True
+    return False
+
+
+
 # mueve la pieza de posicion
 def movePiece(matrix, coordFrom, coordTo):
     matrix[coordTo[0]][coordTo[1]] = matrix[coordFrom[0]][coordFrom[1]]
@@ -88,6 +101,11 @@ def find_max_position(tuple_list, turn):
 #La ia siempre tratara de maximizar
 def minimax(matrix, maximizing, turn, movements):
     posibles, coords = getPosibleMatrices(matrix, movements, turn) # retorna una lista de matrices
+
+    # llamamos a game_over para evaluar si el juego ha finalizado
+    if game_over(matrix):
+        return None
+
     socresList = getListOfScores(posibles)
     if maximizing:
         position = find_max_position(socresList, turn)
