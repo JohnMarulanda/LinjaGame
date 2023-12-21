@@ -229,7 +229,10 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN and turn == 1:  # turno del jugador
             if two_button_rect.collidepoint(event.pos):
-                cargar_archivo()
+                # Si se presionar cargar archivo dentro del juego
+                new_matrix = cargar_archivo()
+                if new_matrix:
+                    matrix = new_matrix  # Actualizar la matriz del juego con la nuev
                 # Cambia el estado del botón
                 button_pressed = True
                 # Espera un tiempo antes de restaurar el botón a su estado normal
