@@ -3,19 +3,6 @@ import numpy as np
 import copy
 
 
-# funcion game_over cuando ninguna ficha comparte columna
-def game_over(matrix):
-    # Recorrer cada columna del tablero
-    for col_idx in range(len(matrix[0])):
-        column_values = [matrix[row_idx][col_idx] for row_idx in range(len(matrix))]
-        # Si todas las celdas de la columna no son iguales (no hay fichas compartidas)
-        if len(set(column_values)) == len(column_values):
-            return True
-    return False
-
-
-
-
 left_column_accumulated = []  # Lista para la columna izquierda (columna 0)
 right_column_accumulated = []  # Lista para la columna derecha (columna 7)
 
@@ -146,7 +133,6 @@ def minimax(matrix, maximizing, turn, movements):
     posibles, coords = getPosibleMatrices(
         matrix, movements, turn
     )  # retorna una lista de matrices
-    posibles, coords = getPosibleMatrices(matrix, movements, turn) # retorna una lista de matrices
 
     # llamamos a game_over para evaluar si el juego ha finalizado
     if game_over(matrix):
