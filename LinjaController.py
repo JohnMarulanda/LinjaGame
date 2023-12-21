@@ -194,9 +194,7 @@ def turns(matrix, coordFrom, coordTo, turn, subTurn, movements, depth=3):
 
     elif turn == 2:  # Turno de la IA
         print("IA jugando")
-        result, coords = minmax.minimax(
-            matrix, True, depth, float("-inf"), float("inf"), 2, -movements
-        )
+        result, coords = minmax.minimax(matrix, True, depth, 2, -movements)
 
         if result:  # Verifica si se devolvió un resultado válido
             if subTurn == 1:

@@ -136,7 +136,7 @@ def evaluate_position(matrix, turn):
     return black_score - red_score if turn == 2 else red_score - black_score
 
 
-def minimax(matrix, maximizing, depth, alpha, beta, turn, movements):
+def minimax(matrix, maximizing, depth, turn, movements):
     if depth == 0 or game_over(matrix):
         return evaluate_position(matrix, turn), None
 
@@ -146,27 +146,19 @@ def minimax(matrix, maximizing, depth, alpha, beta, turn, movements):
         maxEval = float("-inf")
         best_move = None
         for i, move in enumerate(posibles):
-            evaluation, _ = minimax(
-                move, False, depth - 1, alpha, beta, turn, movements
-            )
+            evaluation, _ = minimax(move, False, depth - 1, turn, movements)
             maxEval = max(maxEval, evaluation)
             if maxEval == evaluation:
                 best_move = coords[i]
-            alpha = max(alpha, evaluation)
-            if beta <= alpha:
-                break
         return maxEval, best_move
     else:
         minEval = float("inf")
         best_move = None
         for i, move in enumerate(posibles):
-            evaluation, _ = minimax(move, True, depth - 1, alpha, beta, turn, movements)
+            evaluation, _ = minimax(move, True, depth - 1, turn, movements)
             minEval = min(minEval, evaluation)
             if minEval == evaluation:
                 best_move = coords[i]
-            beta = min(beta, evaluation)
-            if beta <= alpha:
-                break
         return minEval, best_move
 
 
