@@ -1,3 +1,4 @@
+
 import numpy as np
 import copy
 
@@ -24,7 +25,6 @@ def movePiece(matrix, coordFrom, coordTo):
 
     return matrix
 
-
 # ve si la columna tiene almenos una posicion en 0 y la retorna la cacilla vacia mas arriba
 def findZeroColumn(matrix, column, movements):
     target_column = min(len(matrix[0]) - 1, max(0, column + movements))
@@ -33,7 +33,6 @@ def findZeroColumn(matrix, column, movements):
         if valor[target_column] == 0:
             return [fila, target_column]
     return False
-
 
 # recorre toda la matriz y ve que turn son iguales, calcula todos los posibles movimientos
 # retorna list matrices y coords
@@ -112,7 +111,6 @@ def getListOfScores(matrices):
         scores.append(calculate_scores(matrices[i]))
     return scores
 
-
 # de la tupla de los scores se optine la que tenga puntaje maximo
 # la heuristica es (puntajeRoja < puntajeNegra)
 # TODO: esto hace lo mismo que la heuristica (puntajeNegra - puntajeRoja), se puede cambiar si es necesario
@@ -136,6 +134,11 @@ def minimax(matrix, maximizing, turn, movements):
     posibles, coords = getPosibleMatrices(
         matrix, movements, turn
     )  # retorna una lista de matrices
+
+    # llamamos a game_over para evaluar si el juego ha finalizado
+    if game_over(matrix):
+        return None
+
     socresList = getListOfScores(posibles)
     if maximizing:
         position = find_max_position(socresList, turn)
