@@ -17,6 +17,7 @@ from tkinter import Tk, filedialog
 import LinjaController as controller
 import time
 import copy
+
 # Inicializar Pygame
 pygame.init()
 
@@ -35,7 +36,7 @@ m2 = [0, 0]
 count = 0
 turn = 1
 subTurn = 1
-movements = 1 #Numero de movimientos
+movements = 1  # Numero de movimientos
 
 
 def guardar_archivo(matrix):
@@ -46,14 +47,17 @@ def guardar_archivo(matrix):
     folder_selected = filedialog.askdirectory()
 
     if folder_selected:
-        file_path = folder_selected + '/matrix.txt'  # Ruta para el archivo en la carpeta seleccionada
+        file_path = (
+            folder_selected + "/matrix.txt"
+        )  # Ruta para el archivo en la carpeta seleccionada
 
         # Guardar la matriz en un archivo de texto
-        with open(file_path, 'w') as file:
+        with open(file_path, "w") as file:
             for row in matrix:
-                file.write(' '.join(map(str, row)) + '\n')
+                file.write(" ".join(map(str, row)) + "\n")
 
         print(f"La matriz se ha guardado en {file_path}")
+
 
 def cargar_archivo():
     root = Tk()
@@ -139,14 +143,10 @@ blank_surface = pygame.Surface((blank_width, window_height))
 blank_surface.fill((45, 87, 44))  # Rellena el área en blanco con blanco
 
 # Coordenadas y tamaño del nuevo botón (debajo del botón existente)
-two_button_rect = pygame.Rect(
-    820, 180, 160, 70
-)
+two_button_rect = pygame.Rect(820, 180, 160, 70)
 
 # Coordenadas y tamaño del nuevo botón (debajo del botón existente)
-three_button_rect = pygame.Rect(
-    820, 320, 160, 70
-)
+three_button_rect = pygame.Rect(820, 320, 160, 70)
 
 text_rect = pygame.Rect(
     20, 50, 160, 40
@@ -166,7 +166,9 @@ button_unpressed_image = pygame.transform.scale(button_unpressed_image, (160, 70
 button_pressed_image = pygame.transform.scale(button_pressed_image, (160, 70))
 
 # Escalar las imágenes de guardar al tamaño deseado (ancho, alto)
-button_save_unpressed_image = pygame.transform.scale(button_save_unpressed_image, (160, 70))
+button_save_unpressed_image = pygame.transform.scale(
+    button_save_unpressed_image, (160, 70)
+)
 button_save_pressed_image = pygame.transform.scale(button_save_pressed_image, (160, 70))
 
 # Coordenadas donde dibujar la imagen del botón
@@ -218,11 +220,14 @@ pygame.display.set_caption("Linja - Juego de Estrategia")
 
 # Bucle principal para la interfaz gráfica
 running = True
+game_over_message_printed = (
+    False  # Nuevo flag para evitar imprimir múltiples mensajes de fin de juego
+)
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.MOUSEBUTTONDOWN and turn == 1: #turno del jugador
+        if event.type == pygame.MOUSEBUTTONDOWN and turn == 1:  # turno del jugador
             if two_button_rect.collidepoint(event.pos):
                 cargar_archivo()
                 # Cambia el estado del botón
@@ -242,7 +247,7 @@ while running:
             else:
                 # Obtener las coordenadas al hacer clic en una celda
                 row, col = obtener_coordenadas(event.pos)
-                #print(f"Coordenadas: [{row},{col}] = {matrix[row][col]}")
+                # print(f"Coordenadas: [{row},{col}] = {matrix[row][col]}")
 
                 if count == 0 and controller.ruleOnlyMoveYourPeace(
                     matrix[row][col], turn
@@ -252,12 +257,16 @@ while running:
                 elif count > 0:
                     m2 = [row, col]
                     count = 0
-                    result, movements, subTurn, turn = controller.turns(copy.deepcopy(matrix), m1, m2, turn, subTurn, movements)
+                    result, movements, subTurn, turn = controller.turns(
+                        copy.deepcopy(matrix), m1, m2, turn, subTurn, movements, depth=3
+                    )
                     if result:
                         matrix = result
         if turn == 2:
             time.sleep(0.5)
-            result, movements, subTurn, turn = controller.turns(copy.deepcopy(matrix), None, None, turn, subTurn, movements)
+            result, movements, subTurn, turn = controller.turns(
+                copy.deepcopy(matrix), None, None, turn, subTurn, movements
+            )
             if result:
                 matrix = result
 
@@ -307,15 +316,15 @@ while running:
     blank_surface.blit(text_save, text_rect.move(27, 245))
 
     # Pruebas de muestra
-    #text4 = font.render("Ganador: IA", True, (0, 0, 0))
-    #blank_surface.blit(text4, text_rect.move(18, 300))
+    # text4 = font.render("Ganador: IA", True, (0, 0, 0))
+    # blank_surface.blit(text4, text_rect.move(18, 300))
 
     # Llamamos a la función de calcular puntajes
     red_score, black_score, winner = controller.calculate_scores(matrix)
     winner_label = ""
 
     # Bucle para cambiar el ganador (int) a string entendible por el usuario
-    if (winner == 1):
+    if winner == 1:
         winner_label = "Red"
     else:
         winner_label = "Black"
@@ -330,11 +339,12 @@ while running:
     text_black_score = font.render(f"Black: {black_score}", True, (0, 0, 0))
     blank_surface.blit(text_black_score, (18, 550))
 
-    #text5 = font.render("Puntaje: 33", True, (0, 0, 0))
-    #blank_surface.blit(text5, text_rect.move(18, 320))
+    # text5 = font.render("Puntaje: 33", True, (0, 0, 0))
+    # blank_surface.blit(text5, text_rect.move(18, 320))
 
     screen.blit(blank_surface, (desired_game_width, 0))  # El área de la derecha.
     pygame.display.flip()
+
 
 # Salir de Pygame
 pygame.quit()

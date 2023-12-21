@@ -131,6 +131,7 @@ def inputPlayer(coordFrom, coordTo):
 def inputOpponent():
     return 0
 
+
 def ruleNoSecondMovementLast(coordTo, turn):
     if turn == 1 and coordTo[1] == 7:
         return True
@@ -139,11 +140,14 @@ def ruleNoSecondMovementLast(coordTo, turn):
     else:
         return False
 
+
 def ruleLastColumnSecondMove(coordFrom, coordTo, movements):
     if coordTo[1] == 7 and movements > (coordTo[1] - coordFrom[1]):
         return True
     else:
         return False
+
+
 # ----------------- Gameplay ------------------------
 
 
@@ -153,7 +157,7 @@ def move(matrix, coordFrom, coordTo):
     return matrix
 
 
-def turns(matrix, coordFrom, coordTo, turn, subTurn, movements):
+def turns(matrix, coordFrom, coordTo, turn, subTurn, movements, depth=3):
     # Turno del jugador 1
     if (
         turn == 1
@@ -161,7 +165,10 @@ def turns(matrix, coordFrom, coordTo, turn, subTurn, movements):
         and overflowCheck(matrix, coordTo)
         and (positionCheck(matrix, coordTo) or ruleNoSecondMovementLast(coordTo, turn))
         and ruleNoComeBack(coordFrom, coordTo, turn)
-        and (ruleLastColumnSecondMove(coordFrom, coordTo, movements) or ruleMaxMovements(coordFrom, coordTo, movements))
+        and (
+            ruleLastColumnSecondMove(coordFrom, coordTo, movements)
+            or ruleMaxMovements(coordFrom, coordTo, movements)
+        )
     ):
         # Se ve en que jugada esta
         if (
@@ -185,35 +192,36 @@ def turns(matrix, coordFrom, coordTo, turn, subTurn, movements):
 
         return (move(matrix, coordFrom, coordTo)), movements, subTurn, turn
 
-    elif turn == 2:  # Turno de la ia
+    elif turn == 2:  # Turno de la IA
         print("IA jugando")
-        ia, coords = minmax.minimax(matrix, True, 2, -movements)
-        # getSecondMovement(matrix, coords[0])
-        # turn = 1
-        # subTurn = 1
-        # movements = 1
+        result, coords = minmax.minimax(
+            matrix, True, depth, float("-inf"), float("inf"), 2, -movements
+        )
 
-        if (
-            subTurn == 1
-        ): #se ve cuanto es el segundo turno
-            movements = getSecondMovement(matrix, coords[1][1])
-            subTurn = 2
+        if result:  # Verifica si se devolvió un resultado válido
+            if subTurn == 1:
+                # Asegúrate de que haya coordenadas disponibles
+                if coords:
+                    movements = getSecondMovement(matrix, coords[1][1])
+                    subTurn = 2
+                else:
+                    print("El juego ha terminado.")
+                    return matrix, movements, subTurn, turn
+            else:
+                subTurn = 1
+                movements = 1
+                turn = 1
+                print("turno jugador " + str(turn))
+
+            if movements == 0:
+                turn = 1
+                print("turno jugador " + str(turn))
+
+            return move(matrix, coords[0], coords[1]), movements, subTurn, turn
         else:
-            subTurn = 1  # Resetea subturn
-            movements = 1  # movimientos a 1 para el proximo jugador
-            turn = 1  # Sigueitne jugador
-            print("turno jugador " + str(turn))
-
-        # NO hay segundo movimiento
-        if movements == 0 or ruleNoSecondMovementLast(coords[1], turn):
-            turn = 1  # Siguiente jugador
-            subTurn = 1
-            movements = 1
-            print("turno jugador " + str(turn))
-
-        return ia, movements, subTurn, turn
-    else:
-        return False, movements, subTurn, turn
+            # Si la IA no puede hacer un movimiento, termina el juego
+            print("El juego ha terminado.")
+            return matrix, movements, subTurn, turn
 
 
 # ----------------- Puntajes ------------------------

@@ -1,4 +1,3 @@
-
 import numpy as np
 import copy
 
@@ -25,6 +24,7 @@ def movePiece(matrix, coordFrom, coordTo):
 
     return matrix
 
+
 # ve si la columna tiene almenos una posicion en 0 y la retorna la cacilla vacia mas arriba
 def findZeroColumn(matrix, column, movements):
     target_column = min(len(matrix[0]) - 1, max(0, column + movements))
@@ -33,6 +33,7 @@ def findZeroColumn(matrix, column, movements):
         if valor[target_column] == 0:
             return [fila, target_column]
     return False
+
 
 # recorre toda la matriz y ve que turn son iguales, calcula todos los posibles movimientos
 # retorna list matrices y coords
@@ -88,12 +89,12 @@ def calculate_scores(matriz):
     return red_score, black_score, winner
 
 
-def game_over(matriz):
+def game_over(matrix):
     # Verifica si las fichas rojas y negras no comparten ninguna columna
     red_columns = set()
     black_columns = set()
 
-    for fila in matriz:
+    for fila in matrix:
         for col, valor in enumerate(fila):
             if valor == 1:
                 red_columns.add(col)
@@ -103,13 +104,13 @@ def game_over(matriz):
     return not bool(red_columns.intersection(black_columns))
 
 
-
 # Obtiene los scores de una matriz puntual
 def getListOfScores(matrices):
     scores = []
     for i in range(len(matrices)):
         scores.append(calculate_scores(matrices[i]))
     return scores
+
 
 # de la tupla de los scores se optine la que tenga puntaje maximo
 # la heuristica es (puntajeRoja < puntajeNegra)
@@ -129,22 +130,44 @@ def find_max_position(tuple_list, turn):
     return max_position
 
 
-# La ia siempre tratara de maximizar
-def minimax(matrix, maximizing, turn, movements):
-    posibles, coords = getPosibleMatrices(
-        matrix, movements, turn
-    )  # retorna una lista de matrices
+# Función de evaluación para la posición actual
+def evaluate_position(matrix, turn):
+    red_score, black_score, _ = calculate_scores(matrix)
+    return black_score - red_score if turn == 2 else red_score - black_score
 
-    # llamamos a game_over para evaluar si el juego ha finalizado
-    if game_over(matrix):
-        return None
 
-    socresList = getListOfScores(posibles)
+def minimax(matrix, maximizing, depth, alpha, beta, turn, movements):
+    if depth == 0 or game_over(matrix):
+        return evaluate_position(matrix, turn), None
+
+    posibles, coords = getPosibleMatrices(matrix, movements, turn)
+
     if maximizing:
-        position = find_max_position(socresList, turn)
-        return posibles[position], coords[position]
+        maxEval = float("-inf")
+        best_move = None
+        for i, move in enumerate(posibles):
+            evaluation, _ = minimax(
+                move, False, depth - 1, alpha, beta, turn, movements
+            )
+            maxEval = max(maxEval, evaluation)
+            if maxEval == evaluation:
+                best_move = coords[i]
+            alpha = max(alpha, evaluation)
+            if beta <= alpha:
+                break
+        return maxEval, best_move
     else:
-        return False
+        minEval = float("inf")
+        best_move = None
+        for i, move in enumerate(posibles):
+            evaluation, _ = minimax(move, True, depth - 1, alpha, beta, turn, movements)
+            minEval = min(minEval, evaluation)
+            if minEval == evaluation:
+                best_move = coords[i]
+            beta = min(beta, evaluation)
+            if beta <= alpha:
+                break
+        return minEval, best_move
 
 
 # matrix = [
