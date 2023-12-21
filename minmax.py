@@ -6,49 +6,72 @@ left_column_accumulated = []  # Lista para la columna izquierda (columna 0)
 right_column_accumulated = []  # Lista para la columna derecha (columna 7)
 
 
-# mueve la pieza de posicion
+# mueve la pieza de la posición de coordFrom a la posición de coordTo en la matriz del tablero
 def movePiece(matrix, coordFrom, coordTo):
+    # Verificar si la columna de destino está llena
     if matrix[coordTo[0]][coordTo[1]] != 0:
         # La columna de destino está llena
+
+        # Si la columna de destino es la columna izquierda (0), agregar la ficha eliminada a la acumulación izquierda
         if coordTo[1] == 0:
             left_column_accumulated.append(matrix[coordFrom[0]][coordFrom[1]])
+        # Si la columna de destino es la columna derecha (7), agregar la ficha eliminada a la acumulación derecha
         elif coordTo[1] == 7:
             right_column_accumulated.append(matrix[coordFrom[0]][coordFrom[1]])
 
-        # Eliminar la ficha del tablero
+        # Eliminar la ficha del tablero (colocar un 0 en la posición de coordFrom)
         matrix[coordFrom[0]][coordFrom[1]] = 0
     else:
         # La columna de destino no está llena, realizar el movimiento normal
+
+        # Mover la ficha de coordFrom a coordTo
         matrix[coordTo[0]][coordTo[1]] = matrix[coordFrom[0]][coordFrom[1]]
+        # Dejar la posición de coordFrom vacía (colocar un 0)
         matrix[coordFrom[0]][coordFrom[1]] = 0
 
+    # Devolver la matriz actualizada después de realizar el movimiento
     return matrix
 
 
-# ve si la columna tiene almenos una posicion en 0 y la retorna la cacilla vacia mas arriba
+# verifica si la columna tiene al menos una posición con valor 0 y devuelve la celda vacía más arriba
 def findZeroColumn(matrix, column, movements):
+    # Determinar la columna objetivo, limitándola a los índices válidos
     target_column = min(len(matrix[0]) - 1, max(0, column + movements))
 
+    # Iterar a través de las filas de la matriz
     for fila, valor in enumerate(matrix):
+        # Verificar si la celda en la columna objetivo tiene valor 0
         if valor[target_column] == 0:
+            # Devolver las coordenadas de la celda vacía más arriba
             return [fila, target_column]
+
+    # Si no se encuentra ninguna celda vacía, devolver False
     return False
 
 
-# recorre toda la matriz y ve que turn son iguales, calcula todos los posibles movimientos
-# retorna list matrices y coords
+# recorre toda la matriz y verifica que las fichas tengan el mismo turno, calcula todos los posibles movimientos
+# retorna una lista de matrices y coordenadas
 def getPosibleMatrices(matrix, movements, turn):
-    matrices = []
-    coords = []
-    aux = None
+    matrices = (
+        []
+    )  # Lista para almacenar las matrices resultantes de los posibles movimientos
+    coords = []  # Lista para almacenar las coordenadas de los movimientos
+
+    aux = None  # Variable auxiliar para almacenar temporalmente una matriz
+
+    # Iterar a través de las filas y columnas de la matriz
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
+            # Verificar si la ficha en la posición actual tiene el mismo turno y no está en la columna 0
             if matrix[i][j] == turn and j != 0:
+                # Encontrar la primera columna vacía a la izquierda de la ficha actual
                 aux = findZeroColumn(copy.deepcopy(matrix), j, movements)
+                # Si se encuentra una columna vacía, agregar la matriz resultante y las coordenadas a las listas
                 if aux:
                     matrices.append(movePiece(copy.deepcopy(matrix), [i, j], aux))
                     coords.append([[i, j], aux])  # coordFrom, coordTo
 
+    # Devolver las listas de matrices y coordenadas
     return matrices, coords
 
 
@@ -86,21 +109,27 @@ def calculate_scores(matriz):
     else:
         winner = 0
 
+    # Devolver los puntajes y al ganador
     return red_score, black_score, winner
 
 
 def game_over(matrix):
-    # Verifica si las fichas rojas y negras no comparten ninguna columna
+    # Conjuntos para almacenar las columnas ocupadas por fichas rojas y negras
     red_columns = set()
     black_columns = set()
 
+    # Iterar a través de la matriz del tablero
     for fila in matrix:
         for col, valor in enumerate(fila):
+            # Si la celda contiene una ficha roja, agregar la columna a red_columns
             if valor == 1:
                 red_columns.add(col)
+            # Si la celda contiene una ficha negra, agregar la columna a black_columns
             elif valor == 2:
                 black_columns.add(col)
 
+    # Verificar si no hay columnas compartidas entre fichas rojas y negras
+    # Si no hay intersección, significa que cada jugador tiene sus propias columnas y el juego ha terminado
     return not bool(red_columns.intersection(black_columns))
 
 
@@ -132,33 +161,51 @@ def find_max_position(tuple_list, turn):
 
 # Función de evaluación para la posición actual
 def evaluate_position(matrix, turn):
+    # Calcular los puntajes de los jugadores a partir de la matriz del tablero
     red_score, black_score, _ = calculate_scores(matrix)
+
+    # Devolver la diferencia de puntajes, dependiendo del turno del jugador actual
+    # Si es el turno del jugador negro (turn == 2), se resta el puntaje de las fichas rojas
+    # Si es el turno del jugador rojo (cualquier otro valor de turn), se resta el puntaje de las fichas negras
     return black_score - red_score if turn == 2 else red_score - black_score
 
 
+# Definición de la función Minimax
 def minimax(matrix, maximizing, depth, turn, movements):
+    # Verificar si se alcanzó la profundidad máxima o si el juego ha terminado
     if depth == 0 or game_over(matrix):
+        # Calcular la evaluación de la posición actual y devolverla junto con None (sin movimiento)
         return evaluate_position(matrix, turn), None
 
+    # Obtener las posibles matrices y las coordenadas correspondientes a los movimientos válidos
     posibles, coords = getPosibleMatrices(matrix, movements, turn)
 
+    # Si es el turno de maximizar
     if maximizing:
-        maxEval = float("-inf")
-        best_move = None
+        maxEval = float("-inf")  # Inicializar la mejor evaluación como menos infinito
+        best_move = None  # Inicializar la mejor jugada como None
+        # Iterar sobre las posibles matrices y sus coordenadas
         for i, move in enumerate(posibles):
+            # Llamar recursivamente a minimax con el nuevo movimiento y cambiar el turno
             evaluation, _ = minimax(move, False, depth - 1, turn, movements)
+            # Actualizar la mejor evaluación y la mejor jugada si se encuentra una evaluación mejor
             maxEval = max(maxEval, evaluation)
             if maxEval == evaluation:
                 best_move = coords[i]
+        # Devolver la mejor evaluación y la mejor jugada
         return maxEval, best_move
-    else:
-        minEval = float("inf")
-        best_move = None
+    else:  # Si es el turno de minimizar
+        minEval = float("inf")  # Inicializar la mejor evaluación como infinito
+        best_move = None  # Inicializar la mejor jugada como None
+        # Iterar sobre las posibles matrices y sus coordenadas
         for i, move in enumerate(posibles):
+            # Llamar recursivamente a minimax con el nuevo movimiento y cambiar el turno
             evaluation, _ = minimax(move, True, depth - 1, turn, movements)
+            # Actualizar la mejor evaluación y la mejor jugada si se encuentra una evaluación mejor
             minEval = min(minEval, evaluation)
             if minEval == evaluation:
                 best_move = coords[i]
+        # Devolver la mejor evaluación y la mejor jugada
         return minEval, best_move
 
 

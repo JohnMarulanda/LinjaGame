@@ -252,21 +252,30 @@ while running:
                 if count == 0 and controller.ruleOnlyMoveYourPeace(
                     matrix[row][col], turn
                 ):
+                    # Si count es 0 y la regla permite mover la pieza del jugador actual
                     m1 = [row, col]
                     count = 1
                 elif count > 0:
+                    # Si count es mayor que 0, se registra la segunda coordenada m2
                     m2 = [row, col]
                     count = 0
+                    # Llamar a la función turns del controlador para procesar el movimiento
                     result, movements, subTurn, turn = controller.turns(
                         copy.deepcopy(matrix), m1, m2, turn, subTurn, movements, depth=3
                     )
+                    print(result)
                     if result:
                         matrix = result
+        # Turno de la IA (jugador 2)
         if turn == 2:
-            time.sleep(0.5)
+            time.sleep(
+                0.5
+            )  # Introducir un pequeño retraso antes del movimiento de la IA (opcional)
+            # Llamar a la función turns del controlador para que la IA realice su movimiento
             result, movements, subTurn, turn = controller.turns(
                 copy.deepcopy(matrix), None, None, turn, subTurn, movements
             )
+            print(result)
             if result:
                 matrix = result
 
