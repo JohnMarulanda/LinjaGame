@@ -13,6 +13,7 @@ Ingeniería de Sistemas - 3743
 
 import numpy as np
 import minmax
+import copy
 
 # ----------------- Movements ------------------------
 
@@ -130,7 +131,19 @@ def inputPlayer(coordFrom, coordTo):
 def inputOpponent():
     return 0
 
+def ruleNoSecondMovementLast(coordTo, turn):
+    if turn == 1 and coordTo[1] == 7:
+        return True
+    elif turn == 2 and coordTo[1] == 0:
+        return True
+    else:
+        return False
 
+def ruleLastColumnSecondMove(coordFrom, coordTo, movements):
+    if coordTo[1] == 7 and movements > (coordTo[1] - coordFrom[1]):
+        return True
+    else:
+        return False
 # ----------------- Gameplay ------------------------
 
 
@@ -146,9 +159,9 @@ def turns(matrix, coordFrom, coordTo, turn, subTurn, movements):
         turn == 1
         and overflowCheck(matrix, coordFrom)
         and overflowCheck(matrix, coordTo)
-        and positionCheck(matrix, coordTo)
+        and (positionCheck(matrix, coordTo) or ruleNoSecondMovementLast(coordTo, turn))
         and ruleNoComeBack(coordFrom, coordTo, turn)
-        and ruleMaxMovements(coordFrom, coordTo, movements)
+        and (ruleLastColumnSecondMove(coordFrom, coordTo, movements) or ruleMaxMovements(coordFrom, coordTo, movements))
     ):
         # Se ve en que jugada esta
         if (
@@ -163,8 +176,11 @@ def turns(matrix, coordFrom, coordTo, turn, subTurn, movements):
             print("turno jugador " + str(turn))
 
         # NO hay segundo movimiento
-        if movements == 0:
+        print(coordTo)
+        if movements == 0 or ruleNoSecondMovementLast(coordTo, turn):
             turn = 2  # Sigueitne jugador
+            subTurn = 1
+            movements = 1
             print("turno jugador " + str(turn))
 
         return (move(matrix, coordFrom, coordTo)), movements, subTurn, turn
@@ -179,7 +195,7 @@ def turns(matrix, coordFrom, coordTo, turn, subTurn, movements):
 
         if (
             subTurn == 1
-        ):  # Primera jugada. la tercera jugada es si cae en el movimiento especial
+        ): #se ve cuanto es el segundo turno
             movements = getSecondMovement(matrix, coords[1][1])
             subTurn = 2
         else:
@@ -189,8 +205,10 @@ def turns(matrix, coordFrom, coordTo, turn, subTurn, movements):
             print("turno jugador " + str(turn))
 
         # NO hay segundo movimiento
-        if movements == 0:
-            turn = 1  # Sigueitne jugador
+        if movements == 0 or ruleNoSecondMovementLast(coords[1], turn):
+            turn = 1  # Siguiente jugador
+            subTurn = 1
+            movements = 1
             print("turno jugador " + str(turn))
 
         return ia, movements, subTurn, turn

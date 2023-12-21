@@ -43,7 +43,7 @@ def getPosibleMatrices(matrix, movements, turn):
     aux = None
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
-            if matrix[i][j] == turn:
+            if matrix[i][j] == turn and j != 0:
                 aux = findZeroColumn(copy.deepcopy(matrix), j, movements)
                 if aux:
                     matrices.append(movePiece(copy.deepcopy(matrix), [i, j], aux))
@@ -102,6 +102,7 @@ def game_over(matriz):
                 black_columns.add(col)
 
     return not bool(red_columns.intersection(black_columns))
+
 
 
 # Obtiene los scores de una matriz puntual
