@@ -18,6 +18,7 @@ import LinjaController as controller
 import time
 import copy
 
+
 # Inicializar Pygame
 pygame.init()
 

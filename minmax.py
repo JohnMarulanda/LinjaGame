@@ -82,7 +82,7 @@ def calculate_scores(matriz):
     winner = None
 
     # Definir los puntajes por columna
-    scores_per_column = [5, 3, 2, 1, 1, 2, 3, 5]
+    scores_per_column = [5, 3, 2, 1, 0, 0, 0, 0]
 
     # Recorrer cada columna
     for col_idx in range(len(matriz[0])):
