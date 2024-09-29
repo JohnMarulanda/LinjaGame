@@ -20,9 +20,9 @@ The goal of this project is to implement an agent that plays **Linja** by applyi
 
 ## 👥 Team Members
 
-- **Valentina Cobo Bastidas** - 2060174
-- **Paola Andrea Dominguez Velez** - 2059956
-- **John Jader Marulanda Valero** - 2060034
+- **Joann Esteban Bedoya Lopez** 
+- **Carlos Eduardo Guerrero Jaramillo** 
+- **John Jader Marulanda Valero** 
 
 ---
 
